@@ -1,45 +1,45 @@
 ---
 # Убедимся что Kibana APT repository key добавлен
 - name: Добавим Kibana APT repository key
-  ansible.builtin.apt_key:
+  apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
 
 # Убедимся что Kibana APT repository добавлен
 - name: Добавим Kibana APT repository
-  ansible.builtin.apt_repository:
+  apt_repository:
     repo: "deb https://artifacts.elastic.co/packages/8.x/apt stable main"
     state: present
 
 # Обновим APT cache
 - name: Обновим APT cache
-  ansible.builtin.apt:
+  apt:
     update_cache: yes
 
 # Установим Kibana
 - name: Установка Kibana 8.х
-  ansible.builtin.apt:
+  apt:
     name: kibana
     state: present
   register: kibana_install_status
 
 # Проверим Kibana service запущен
 - name: Проверим что Kibana service запщен
-  ansible.builtin.systemd:
+  systemd:
     name: kibana
     state: started
   register: kibana_service_status
 
 # Переставляем Kibana если сервис не был запущен
 - name: Переставляем Kibana если сервис не был запущен
-  ansible.builtin.apt:
+  apt:
     name: kibana
     state: present
   when: kibana_service_status.changed
 
 # Проверим что Kibana service включен и запущен
 - name: Проверим что Kibana service включен и запущен
-  ansible.builtin.systemd:
+  systemd:
     name: kibana
     enabled: yes
     state: started

@@ -100,7 +100,7 @@
       notify:
         - Reload UFW
 
-    - name: UFW - Deny all other incoming traffic by default
+    - name: UFW - Запретить все другие входящие по умолчанию
       ufw:
         state: enabled
         policy: deny

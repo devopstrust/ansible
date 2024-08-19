@@ -1,57 +1,57 @@
 ---
 # Убедимся что Java установлена
 - name: Проверим если Java установлена
-  ansible.builtin.command: java -version
+  command: java -version
   register: java_check
   ignore_errors: true
 
 - name: Установим OpenJDK 11 если Java не утановлена
-  ansible.builtin.apt:
+  apt:
     name: openjdk-11-jdk
     state: present
   when: java_check.failed
 
 # Убедимся что Elasticsearch APT repository key добавлен
 - name: Добавим Elasticsearch APT repository key
-  ansible.builtin.apt_key:
+  apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
 
 # Проверка что Elasticsearch APT repository добавлен
 - name: Добавим Elasticsearch APT repository
-  ansible.builtin.apt_repository:
+  apt_repository:
     repo: "deb https://artifacts.elastic.co/packages/8.x/apt stable main"
     state: present
 
 # Обновление APT cache
-- name: Update APT cache
-  ansible.builtin.apt:
+- name: Обнновление APT cache
+  apt:
     update_cache: yes
 
 # Установка Elasticsearch
 - name: Установка Elasticsearch 8.х
-  ansible.builtin.apt:
+  apt:
     name: elasticsearch=8.15.0
     state: present
   register: elasticsearch_install_status
 
 # Проверим что Elasticsearch service запущен
 - name: Проверим Elasticsearch service запущен
-  ansible.builtin.systemd:
+  systemd:
     name: elasticsearch
     state: started
   register: elasticsearch_service_status
 
 # Переставим Elasticsearch если service не был запущен
 - name: Переставим Elasticsearch если service не был запущен
-  ansible.builtin.apt:
+  apt:
     name: elasticsearch=8.15.0
     state: present
   when: elasticsearch_service_status.changed
 
 # Копируем Elasticsearch configuration файл из шаблонов
 - name: Копируем Elasticsearch configuration файл
-  ansible.builtin.template:
+  template:
     src: templates/elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
     mode: '0644'
@@ -60,7 +60,7 @@
 
 # Копируем Elasticsearch configuration файл из шаблонов
 - name: Копируем Elasticsearch configuration файл
-  ansible.builtin.template:
+  template:
     src: templates/elasticsearch.keystore.j2
     dest: /etc/elasticsearch/elasticsearch.keystore
     mode: '0644'
@@ -70,7 +70,7 @@
 
 # Проверим что Elasticsearch service включен и запущен
 - name: Проверим что Elasticsearch service влючен и запущен 
-  ansible.builtin.systemd:
+  systemd:
     name: elasticsearch
     enabled: yes
     state: started

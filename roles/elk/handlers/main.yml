@@ -1,17 +1,17 @@
 ---
 # handlers file for roles/elk
 - name: restart elasticsearch
-  ansible.builtin.systemd:
+  systemd:
     name: elasticsearch
     state: restarted
 
 - name: restart logstash
-  ansible.builtin.systemd:
+  systemd:
     name: logstash
     state: restarted
 
 - name: restart kibana
-  ansible.builtin.systemd:
+  systemd:
     name: kibana
     state: restarted
 
