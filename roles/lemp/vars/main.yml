@@ -1,0 +1,6 @@
+---
+# vars file for roles/lemp
+mysql_root_password: "mysql_root_password"
+http_host: "192.168.1.205"
+http_conf: "my_domain.conf"
+http_port: "80"
