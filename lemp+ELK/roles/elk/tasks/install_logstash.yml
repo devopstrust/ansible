@@ -1,0 +1,55 @@
+---
+# Убедимся что  Logstash APT repository key добавлен
+- name: убедимся что  Logstash APT repository key добавлен
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+#  Убедимся что Logstash APT repository добавлен
+- name: Убедимся что Logstash APT repository добавлен
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/8.x/apt stable main"
+    state: present
+
+# Обновление APT cache
+- name: Обновление APT cache
+  apt:
+    update_cache: yes
+
+# Установка Logstash
+- name: Установка Logstash из репа 8.х
+  apt:
+    name: logstash
+    state: present
+  register: logstash_install_status
+
+# Убедимся что Logstash service запущен 
+- name: Убедимся что Logstash service запущен
+  systemd:
+    name: logstash
+    state: started
+  register: logstash_service_status
+
+# Переставим Logstash если service не был запущен
+- name: Переставим Logstash если service не был запущен
+  apt:
+    name: logstash
+    state: present
+  when: logstash_service_status.changed
+
+# Копируем Logstash configuration файл
+- name: Копируем Logstash configuration файл
+  template:
+    src: templates/logstash.conf.j2
+    dest: /etc/logstash/logstash.yml
+    mode: '0644'
+  notify:
+    - restart logstash
+
+# Проверим что Logstash service включен и запущен
+- name: Проверим что Logstash service включен и запущен
+  systemd:
+    name: logstash
+    enabled: yes
+    state: started
+

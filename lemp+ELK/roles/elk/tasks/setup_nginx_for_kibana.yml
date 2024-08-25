@@ -1,0 +1,28 @@
+---
+- name: Установка nginx
+  apt: name=nginx
+
+- name: Установка apache2
+  apt: name=apache2
+
+- name: Установка apache2-utils для настройки базовой авторизации
+  apt: name=apache2-utils
+
+- name: Установка htpasswd
+  command: htpasswd -bc /etc/apache2/.htpasswd admin admin
+
+- name: Создание nginx conf для kibana
+  template:
+    src: templates/nginx_kibana.conf.j2
+    dest: /etc/nginx/sites-available/kibana.conf
+
+- name: Добавление kibana site к enabled sites
+  file:
+    src: /etc/nginx/sites-available/kibana.conf
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
