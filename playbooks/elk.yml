@@ -1,3 +1,0 @@
-- hosts: elk_servers
-  roles:
-    - elk

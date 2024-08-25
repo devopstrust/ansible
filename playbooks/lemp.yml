@@ -1,5 +1,0 @@
-- hosts: lemp_servers
-  become: true
-  roles:
-    - lemp
-    - filebeat
